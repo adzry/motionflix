@@ -1,16 +1,15 @@
 /**
- * Honest status banner shown while the library renders sample data.
+ * Honest status line shown while the library renders sample data.
  * Remove once real uploads are served (see docs/ROADMAP.md).
  */
 export function FoundationNotice() {
   return (
-    <aside
-      aria-label="Project status"
-      className="mx-4 rounded-lg border border-line bg-surface/80 px-4 py-3 text-sm text-muted sm:mx-8 lg:mx-12"
-    >
-      <strong className="font-semibold text-ink">Foundation preview.</strong>{" "}
-      These are sample titles with generated artwork. Sign-in, cloud storage,
-      uploads and playback are not implemented yet.
-    </aside>
+    <p role="note" className="px-gutter text-xs text-subtle sm:text-sm">
+      <span className="mr-2 rounded-sm border border-white/25 px-1.5 py-px text-[10px] font-semibold tracking-wider text-muted uppercase">
+        Sample library
+      </span>
+      Titles and artwork are placeholders. Playback, uploads, My List and sign-in
+      aren&apos;t built yet.
+    </p>
   );
 }

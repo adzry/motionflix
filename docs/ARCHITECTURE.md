@@ -4,7 +4,8 @@ MotionFlix is a private, single-owner video library for renders produced with
 Claude Motion Studio. It's styled like a cinematic streaming app: dark UI,
 featured hero, horizontal rows.
 
-> **Status:** Phase 1 (Foundation). Only the UI shell and sample data exist.
+> **Status:** Phase 1 (Foundation + Netflix-style UI). Only the UI and sample
+> data exist.
 > Auth, database, storage, uploads and playback are **not implemented** yet.
 > See [ROADMAP.md](./ROADMAP.md).
 
@@ -25,52 +26,96 @@ featured hero, horizontal rows.
 
 ```
 src/
-  app/                    Routes (App Router)
-    layout.tsx            Root shell: fonts, header, footer, skip link
-    page.tsx              Home: featured hero + video rows
-    globals.css           Tailwind import + design tokens (@theme)
+  app/                      Routes (App Router)
+    layout.tsx              Root shell: fonts, LibraryProvider, header, footer
+    page.tsx                Home: featured billboard + rows
+    browse/[slug]/page.tsx  Category pages (static params from config)
+    search/page.tsx         Search results (searchParams behind <Suspense>)
+    not-found.tsx           404
+    globals.css             Tailwind import + design tokens (@theme)
   components/
-    ui/                   Generic primitives, no domain knowledge
-      button.tsx          <Button> + buttonStyles() for links
+    ui/                     Generic primitives, no domain knowledge
+      button.tsx            <Button> + buttonStyles() for links
+      circle-button.tsx     Round icon buttons (preview / modal actions)
       badge.tsx, icons.tsx, logo.tsx
-    layout/               App chrome
-      site-header.tsx     Client: scroll-aware bar + mobile menu
+    layout/                 App chrome
+      site-header.tsx       Client: scroll-aware nav, Browse menu, mobile chips
+      header-search.tsx     Client: expanding search box → /search?q=
+      profile-menu.tsx      Client: avatar dropdown ("Soon" items)
       site-footer.tsx
-    library/              Video-library domain components
-      featured-hero.tsx   Full-bleed featured title
-      video-row.tsx       Client: horizontal scroller with arrows
-      video-card.tsx      16:9 tile
-      poster-art.tsx      Procedural placeholder artwork (original, no images)
-      foundation-notice.tsx  "This is sample data" banner
-  config/site.ts          Site name, nav items (with `comingSoon` flags)
+    library/                Video-library domain components
+      library-provider.tsx  Client context: hover preview, details modal, toasts
+      featured-hero.tsx     Billboard (desktop) / poster card (mobile)
+      video-row.tsx         Client: horizontal slider, arrows, page indicators
+      video-card.tsx        16:9 tile; hover → preview, click → details
+      video-grid.tsx        Wrapping grid for category + search pages
+      hover-preview.tsx     Pop-over "mini modal" rendered in a portal
+      title-modal.tsx       "More info" <dialog> with More Like This
+      artwork.tsx           next/image artwork with focal-point cropping
+      poster-art.tsx        Generated fallback art when a video has no poster
+      title-treatment.tsx   Per-title display lettering over artwork
+      video-meta.tsx        Metadata line + progress bar
+      toast.tsx             Status toast for unavailable actions
+      foundation-notice.tsx "Sample library" disclosure
+  config/
+    site.ts                 Site name, nav items (with `comingSoon` flags)
+    categories.ts           Category slugs, labels, descriptions
   lib/
-    library.ts            DATA-ACCESS SEAM: pages read library data only here
-    placeholder/catalog.ts Sample titles (all flagged isPlaceholder)
-    format.ts, cn.ts      Small utilities
-  types/video.ts          Domain types (Video, Collection, PosterArt)
-docs/                     Architecture + roadmap
+    library.ts              DATA-ACCESS SEAM: pages read library data only here
+    placeholder/catalog.ts  Sample titles (all flagged isPlaceholder)
+    feature-status.ts       Copy for features that aren't built yet
+    use-dismiss.ts, format.ts, cn.ts
+  types/video.ts            Domain types (Video, Collection, WatchProgress, …)
+public/artwork/             Sample artwork (generated SVG, 1600×900)
+scripts/generate-artwork.mjs Deterministic generator for public/artwork
+docs/                       Architecture + roadmap
 ```
+
+### UI behaviour (Netflix-style)
+
+- **Header:** transparent over the billboard, solid after scrolling. Full nav
+  at ≥1024px, a "Browse" dropdown at 768–1023px, category chips on mobile.
+- **Rows:** native horizontal scrolling with snap points (touch-friendly);
+  on pointer devices, paging arrows and page indicators appear on hover.
+- **Hover preview:** after a 450 ms hover with a mouse, an enlarged card pops
+  over the tile (portal, `position: fixed`), clamped to the viewport. Any
+  scroll or resize dismisses it. Touch devices skip it.
+- **Details modal:** native `<dialog>`; Escape / backdrop click closes it.
+- **Unavailable actions** (Play, My List, profiles, notifications) stay
+  visible but show a toast explaining which phase delivers them.
+
+### Sample artwork
+
+`public/artwork/*.svg` is original, generated by
+`node scripts/generate-artwork.mjs` (no dependencies, deterministic). Each
+title has a distinct scene. SVGs are served through `next/image`, which skips
+optimisation for `.svg` automatically. Real uploads will use poster images
+from R2 (`Video.artwork`), with `PosterArt` as the fallback.
 
 ### Conventions
 
 - **Server Components by default.** Only components that need browser state or
-  events are `"use client"` (`site-header`, `video-row`).
+  events are `"use client"` (header pieces, rows, cards, hero, modal, preview).
 - **Design tokens live in `globals.css` `@theme`.** Use `bg-canvas`,
-  `bg-surface`, `text-muted`, `text-subtle`, `bg-flare`, `border-line`, etc.
-  instead of hex values.
+  `bg-surface`, `text-muted`, `text-subtle`, `bg-flare`, `px-gutter`,
+  `font-display`, etc. instead of hex values.
 - **`components/ui` never imports from `components/library`.** Domain
   components compose primitives, not the other way round.
 - **One data seam.** UI never imports `lib/placeholder/*` directly; it calls
   `lib/library.ts`. Swapping placeholders for Supabase queries changes one
   module, not the pages.
-- **Honest UI.** Features that don't exist render as disabled controls or
-  "Soon" badges; nothing links to a 404 or pretends to work.
+- **Honest UI.** Features that don't exist are visibly marked ("Soon",
+  "Phase 2", "Sample") or explain themselves with a toast; nothing links to a
+  404 or pretends to work.
 - **Next.js 16 differs from older versions.** Read
   `node_modules/next/dist/docs/` before using unfamiliar APIs (see `AGENTS.md`).
 
 ## Rendering model
 
-Cache Components is on (`cacheComponents: true`). Today `/` is fully static.
+Cache Components is on (`cacheComponents: true`). `/` and the category pages
+are fully static; `/search` is a static shell with results streamed in behind
+`<Suspense>` because it reads `searchParams`. Note: `dynamicParams` is not
+available with Cache Components, so unknown category slugs call `notFound()`.
 Once auth lands, anything that reads cookies/session runs at request time and
 **must sit behind `<Suspense>`** so the static shell (header, layout) can still
 be prerendered. Follow

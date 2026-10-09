@@ -5,20 +5,20 @@ type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md font-semibold whitespace-nowrap transition-colors " +
+  "inline-flex items-center justify-center gap-2 rounded font-bold whitespace-nowrap transition-colors " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink " +
   "disabled:cursor-not-allowed disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-ink text-canvas hover:bg-ink/85",
-  secondary: "bg-white/15 text-ink backdrop-blur-sm hover:bg-white/25",
+  primary: "bg-ink text-canvas hover:bg-ink/75",
+  secondary: "bg-[#6d6d6e]/70 text-ink hover:bg-[#6d6d6e]/50",
   ghost: "text-muted hover:bg-white/10 hover:text-ink",
 };
 
 const sizes: Record<Size, string> = {
   sm: "h-8 px-3 text-sm",
-  md: "h-10 px-5 text-sm",
-  lg: "h-12 px-7 text-base",
+  md: "h-10 px-5 text-base",
+  lg: "h-11 px-7 text-lg lg:h-12 lg:px-8 lg:text-xl",
 };
 
 export interface ButtonStyleOptions {

@@ -3,10 +3,11 @@
 A private, Netflix-inspired personal video library for videos produced with
 Claude Motion Studio.
 
-> **Current phase: 1 — Foundation.** The home page UI (navigation, featured
-> hero, horizontal video rows) renders with **sample titles and generated
-> placeholder artwork**. Sign-in, cloud storage, uploads and playback are
-> **not implemented yet** and are shown as disabled / "Soon" in the UI.
+> **Current phase: 1 — Foundation + Netflix-style UI.** Home, category and
+> search pages, hover previews and a details modal all work over **sample
+> titles with original generated artwork**. Sign-in, cloud storage, uploads,
+> My List and playback are **not implemented yet**; they're marked "Soon" in
+> the UI or explain themselves with a notice when clicked.
 
 ## Stack
 
@@ -35,6 +36,7 @@ No environment variables are needed for Phase 1. For later phases, copy
 | `npm run build`     | Production build                              |
 | `npm run start`     | Serve the production build                    |
 | `npm run check`     | lint + typecheck + build                      |
+| `node scripts/generate-artwork.mjs` | Regenerate sample artwork in `public/artwork` |
 
 ## Docs
 

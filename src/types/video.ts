@@ -9,10 +9,12 @@
 /** Lifecycle of an uploaded video. Only `ready` videos are playable. */
 export type VideoStatus = "uploading" | "processing" | "ready" | "failed";
 
+/** Top-level shelves, shown as categories in the navigation. */
+export type VideoCategory = "film" | "explainer" | "motion" | "experiment";
+
 /**
- * Visual parameters for generated placeholder artwork. Real videos will use a
- * poster image stored in R2; until then every title renders original,
- * procedurally generated art from this seed.
+ * Parameters for procedurally generated fallback art, used when a video has
+ * no poster image.
  */
 export interface PosterArt {
   /** Base hue in degrees (0–360). */
@@ -21,6 +23,16 @@ export interface PosterArt {
   motif: "orbit" | "waves" | "grid" | "beams" | "rings";
 }
 
+/** A 16:9 poster / backdrop image. */
+export interface Artwork {
+  src: string;
+  /** CSS object-position used when the image is cropped (e.g. "70% 50%"). */
+  focus?: string;
+}
+
+/** Typeface used for the title treatment over artwork. */
+export type TitleStyle = "display" | "serif" | "grotesk";
+
 export interface Video {
   id: string;
   title: string;
@@ -28,9 +40,16 @@ export interface Video {
   durationSeconds: number;
   /** ISO 8601 timestamp of when the video was added to the library. */
   createdAt: string;
+  /** Year the piece was produced. */
+  year: number;
+  category: VideoCategory;
   tags: string[];
+  quality: "HD" | "4K";
   status: VideoStatus;
+  /** Poster image; falls back to generated `art` when absent. */
+  artwork?: Artwork;
   art: PosterArt;
+  titleStyle: TitleStyle;
   /** True for the built-in sample catalog shown before storage exists. */
   isPlaceholder: boolean;
 }
@@ -40,4 +59,11 @@ export interface Collection {
   title: string;
   description?: string;
   videoIds: string[];
+}
+
+/** Saved playback position. Sample-only until Phase 4. */
+export interface WatchProgress {
+  videoId: string;
+  /** 0–1 fraction of the video watched. */
+  progress: number;
 }

@@ -1,3 +1,5 @@
+import { categories } from "./categories";
+
 export const siteConfig = {
   name: "MotionFlix",
   tagline: "Your private screening room for Claude Motion Studio renders.",
@@ -13,12 +15,12 @@ export interface NavItem {
 }
 
 /**
- * Primary navigation. Items without a real route yet point at sections of the
- * home page or are flagged `comingSoon` so the UI never links to a 404.
+ * Primary navigation. Category pages are real routes over the sample catalog;
+ * features that don't exist yet are flagged `comingSoon` so nothing links to
+ * a 404.
  */
 export const mainNav: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "Recently Added", href: "/#recently-added" },
-  { label: "Collections", href: "/#collections" },
-  { label: "Upload", href: "/upload", comingSoon: true },
+  ...categories.map((c) => ({ label: c.navLabel, href: `/browse/${c.slug}` })),
+  { label: "My List", href: "/my-list", comingSoon: true },
 ];

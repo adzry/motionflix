@@ -13,6 +13,18 @@ the UI showing only what really works.
 - [x] Single data-access seam (`src/lib/library.ts`) over a sample catalog
 - [x] Architecture doc, roadmap, `.env.example` (placeholders only)
 
+### Phase 1b — Netflix-style UI ✅
+
+- [x] Billboard hero (desktop) and poster-card hero (mobile)
+- [x] Nav with categories, Browse menu, mobile chips, search, profile menu
+- [x] Rows: Recently Added, Continue Watching (sample progress), Cinematic
+      Films, AI Explainers, Motion Design, Experiments, Late-Night Ambient
+- [x] Hover preview pop-overs, paging arrows, page indicators
+- [x] "More info" modal with More Like This
+- [x] Category pages (`/browse/[slug]`) and search (`/search?q=`) over the
+      sample catalog
+- [x] 22 original generated artworks (`scripts/generate-artwork.mjs`)
+
 ## Phase 2 — Authentication (next)
 
 Goal: only the owner can see anything.
@@ -39,7 +51,10 @@ rejected; the owner can sign in and out.
 3. Home rows from real data: Recently Added + collections. Empty state when
    the library has no videos.
 4. Title detail page (`/videos/[id]`) with metadata ("More info").
-5. Remove `lib/placeholder/` and `FoundationNotice` once real data renders.
+5. Real "Continue Watching" and "New" badges from data instead of the sample
+   `placeholderProgress` and newest-six heuristic.
+6. Remove `lib/placeholder/`, `public/artwork/` sample files and
+   `FoundationNotice` once real data renders.
 
 ## Phase 4 — Storage, upload, playback
 
@@ -54,8 +69,8 @@ rejected; the owner can sign in and out.
 
 ## Phase 5 — Polish
 
-Search and tag filters, "My List", collection management, keyboard navigation
-across rows, video deletion (DB row + R2 objects), loading skeletons, error
+Tag filters, "My List", collection management, deep-linkable details modal
+(`?title=` param), keyboard navigation across rows, video deletion (DB row + R2 objects), loading skeletons, error
 boundaries, basic tests (unit for `lib/`, Playwright smoke for the home page).
 
 ## Phase 6 — Deployment

@@ -1,15 +1,26 @@
+import Link from "next/link";
+import { categories } from "@/config/categories";
 import { siteConfig } from "@/config/site";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line/60 px-4 py-10 text-sm text-subtle sm:px-8 lg:px-12">
-      <div className="mx-auto flex max-w-screen-2xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          {siteConfig.name} — a private, personal library. Not affiliated with
-          Netflix.
-        </p>
-        <p>Foundation build · sample artwork is procedurally generated.</p>
-      </div>
+    <footer className="mx-auto w-full max-w-5xl px-gutter pt-16 pb-10 text-[13px] text-subtle">
+      <nav aria-label="Footer">
+        <ul className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+          <li><Link href="/" className="hover:underline">Home</Link></li>
+          {categories.map((c) => (
+            <li key={c.slug}>
+              <Link href={`/browse/${c.slug}`} className="hover:underline">{c.title}</Link>
+            </li>
+          ))}
+          <li><Link href="/search" className="hover:underline">Search</Link></li>
+        </ul>
+      </nav>
+      <p className="mt-8">
+        {siteConfig.name} is a private, personal library for Claude Motion Studio
+        renders. Sample titles and artwork are placeholders.
+      </p>
+      <p className="mt-2">Not affiliated with Netflix.</p>
     </footer>
   );
 }
