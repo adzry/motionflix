@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/*
+ * MotionFlix design tokens.
+ * Dark, cinematic palette. Use these via Tailwind utilities
+ * (e.g. `bg-canvas`, `text-muted`, `bg-flare`) instead of raw hex values.
+ */
+@theme {
+  --color-canvas: #08080a;
+  --color-surface: #141418;
+  --color-surface-raised: #1e1e24;
+  --color-line: #2a2a32;
+  --color-ink: #f4f4f6;
+  --color-muted: #a1a1ab;
+  --color-subtle: #6b6b76;
+  --color-flare: #ff3d2e;
+  --color-flare-hover: #ff5a4d;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --shadow-card: 0 18px 40px -12px rgb(0 0 0 / 0.8);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+  }
+
+  ::selection {
+    @apply bg-flare text-white;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
